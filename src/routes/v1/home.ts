@@ -19,8 +19,14 @@ import { Request, Response } from 'express';
 export default async function homeRoute(req: Request, res: Response) {
   const blocksApi = new Edusign.Blocks();
 
-  blocksApi.Title('title', 'Example App');
-  blocksApi.Text('description', 'Intégration de ma nouvelle app avec Edusign.');
+  blocksApi.Card("newCard", "Nouvelle carte");
+  blocksApi.Wrapper("wrapperId", [
+    { label: "Tout les événements", value: "allevents" },
+    { label: "Mes événements", value: "myevents" }
+  ], "allevents", "https://complete-rare-octopus.ngrok-free.app/v1/home", {
+    name: "moduleSelected",
+    data: {}
+  });
 
   res.send(blocksApi.toJson());
 }
