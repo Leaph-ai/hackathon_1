@@ -15,7 +15,7 @@ import edusignApiMiddleware from '@middlewares/edusignApi';
  */
 const router = Router();
 
-router.post('/', edusignApiMiddleware, hmacValidatorMiddleware, parametersMiddleware, home);
+router.post('/app', edusignApiMiddleware, hmacValidatorMiddleware, parametersMiddleware, home);
 router.post('/install', install);
 router.post('/uninstall', hmacValidatorMiddleware, uninstall);
 
