@@ -9,6 +9,7 @@ import appMiddleware from '@middlewares/app';
 import { v1, webhook } from '@routes';
 import { Environment } from '@appTypes/environment/envs';
 import { WebhookError } from '@utils/errors';
+import createEvent from '@routes/v1/createEvent'
 
 const app = express();
 
@@ -19,10 +20,12 @@ app.use(morganMiddleware);
 
 // Add app information to the request
 app.use(appMiddleware);
+app.use(express.json());
 
 // Add routes
 app.use('/v1', v1);
 app.use('/webhook', webhook);
+app.use('/createEvent', createEvent)
 
 // Generic 404 handler
 app.use((req: Request, res: Response, next: NextFunction) => {

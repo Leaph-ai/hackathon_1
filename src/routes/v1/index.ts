@@ -7,6 +7,7 @@ import uninstall from './uninstall';
 import hmacValidatorMiddleware from '@middlewares/hmacValidator';
 import parametersMiddleware from '@middlewares/parameters';
 import edusignApiMiddleware from '@middlewares/edusignApi';
+import createEvent from "@routes/v1/createEvent";
 
 /**
  * Creates and initializes a new router instance for handling API routes.
@@ -19,6 +20,7 @@ const router = Router();
 router.post('/homeRoute', edusignApiMiddleware, hmacValidatorMiddleware, parametersMiddleware, allEvents);
 router.post('/myEvents', myEvents);
 router.post('/allEvents', allEvents);
+router.post('/createEvent', createEvent);
 router.post('/install', install);
 router.post('/uninstall', hmacValidatorMiddleware, uninstall);
 
