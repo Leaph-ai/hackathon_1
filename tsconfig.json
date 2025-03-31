@@ -1,0 +1,46 @@
+{
+  "compilerOptions":{
+     "target":"es6",
+     "module":"commonjs",
+     "rootDir":"./",
+     "outDir":"./dist",
+     "esModuleInterop":true,
+     "inlineSourceMap": true,
+     "strict":true,
+     "resolveJsonModule":true,
+     "moduleResolution":"node",
+     "allowJs": true,
+     "baseUrl":"./",
+     "paths":{
+        "@app":["src/app.ts"],
+        "@logger":["src/utils/logger.ts"],
+        "@db":["src/utils/db/index.ts"],
+        "@db/*":["src/utils/db/*"],
+        "@core/*":["src/core/*"],
+        "@routes":["src/routes/index.ts"],
+        "@routes/*":["src/routes/*"],
+        "@utils/*":["src/utils/*"],
+        "@middlewares/*":["src/middlewares/*"],
+        "@appTypes/*":["src/types/*"],
+        "@repositories/*":["src/repositories/*"],
+        "@knexConfig":["knexfile.ts"],
+        "@tests/*":["tests/*"]
+     }
+  },
+  "typeRoots":[
+     "./src/types",
+     "./node_modules/@types"
+  ],
+  "include":[
+     "src/**/*",
+     "src/types/**/*",
+     "migrations/*",
+     "seeds/*",
+     "tests/**/*",
+     "tests/.setup/*"
+  ],
+  "exclude":[
+     "node_modules",
+     "dist"
+  ]
+}
