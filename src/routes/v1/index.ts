@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
-import home from './home';
+import allEvents from './allEvents';
+import myEvents from './myEvents';
 import install from './install';
 import uninstall from './uninstall';
 import hmacValidatorMiddleware from '@middlewares/hmacValidator';
@@ -15,7 +16,9 @@ import edusignApiMiddleware from '@middlewares/edusignApi';
  */
 const router = Router();
 
-router.post('/app', edusignApiMiddleware, hmacValidatorMiddleware, parametersMiddleware, home);
+router.post('/homeRoute', edusignApiMiddleware, hmacValidatorMiddleware, parametersMiddleware, allEvents);
+router.post('/myEvents', myEvents);
+router.post('/allEvents', allEvents);
 router.post('/install', install);
 router.post('/uninstall', hmacValidatorMiddleware, uninstall);
 

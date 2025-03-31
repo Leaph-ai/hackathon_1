@@ -16,14 +16,14 @@ import { Request, Response } from 'express';
  * 
  * @see https://developers.edusign.com/docs/action-documentation
  */
-export default async function homeRoute(req: Request, res: Response) {
+export default async function myEvents(req: Request, res: Response) {
   const blocksApi = new Edusign.Blocks();
 
   blocksApi.Card("newCard", "Nouvelle carte");
   blocksApi.Wrapper("wrapperId", [
     { label: "Tout les événements", value: "allevents" },
     { label: "Mes événements", value: "myevents" }
-  ], "allevents", "https://complete-rare-octopus.ngrok-free.app/v1/home", {
+  ], "myevents", "https://complete-rare-octopus.ngrok-free.app/v1/allEvents", {
     name: "moduleSelected",
     data: {}
   });
