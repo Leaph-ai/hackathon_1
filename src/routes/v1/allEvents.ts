@@ -2,6 +2,7 @@ import Edusign from '@_edusign/api';
 import { Request, Response } from 'express';
 import db from "@db";
 import {getParticipationTab, getParticipationString} from "@routes/v1/getParticipation";
+import {el} from "@faker-js/faker";
 
 /**
  * Handles the home route for the application.
@@ -64,6 +65,12 @@ export default async function allEvents(req: Request, res: Response) {
     });
   }
 
+  if (req.body?.["action"]) {
+    if (req.body?.["action"] !== "empty") {
+      await db('events').where('id', req.body?.["action"]).delete();
+    }
+  }
+
   const events = await db('events').select();
 
 
@@ -86,20 +93,8 @@ export default async function allEvents(req: Request, res: Response) {
         }
         ];
 
-    if (req.body?.["action"]) {
-      if (req.body?.["action"] === "empty") {
-        let participation = ""
 
-        for (let i = 0; i < req.body?.["action"].length; i++) {
-          participation.concat(req.body?.["action"][i])
-          if (i !== req.body?.["action"].length - 1) {
-            participation.concat(",");
-          }
-        }
-      }
-    }
-
-    if (global.STUDENTID !== null) {
+    if (global.STUDENTID === event.student_id) {
       buttonsList.push({
         label: "Modifier",
         style: "secondary",
@@ -108,7 +103,16 @@ export default async function allEvents(req: Request, res: Response) {
           data: {}
         },
         url: 'https://complete-rare-octopus.ngrok-free.app/v1/modifyEvents'
-      })
+      },{
+            label: "Supprimer",
+            style: "danger",
+            action: {
+              name: event.id.toString(),
+              data: {}
+            },
+            url: 'https://complete-rare-octopus.ngrok-free.app/v1/allEvents'
+          }
+          )
     }
 
     // @ts-ignore

@@ -46,15 +46,39 @@ export default async function myEvents(req: Request, res: Response) {
     blocksApi.Title("event-name-" + event.id, event.event_name);
     blocksApi.Text("event-date-" + event.id, event.event_date + " Durée : " + event.event_duration)
 
-    buttonsList.push({
-      label: "Modifier",
-      style: "secondary",
-      action: {
-        name: event.id.toString(),
-        data: {}
-      },
-      url: 'https://complete-rare-octopus.ngrok-free.app/v1/modifyEvents'
-    })
+    let buttonsList = [
+      {
+        label: "Participer",
+        style: "primary",
+        action: {
+          name: "empty",
+          data: {}
+        },
+        url: 'https://complete-rare-octopus.ngrok-free.app/v1/allEvents'
+      }
+    ];
+
+
+    if (global.STUDENTID === event.student_id) {
+      buttonsList.push({
+            label: "Modifier",
+            style: "secondary",
+            action: {
+              name: event.id.toString(),
+              data: {}
+            },
+            url: 'https://complete-rare-octopus.ngrok-free.app/v1/modifyEvents'
+          },{
+            label: "Supprimer",
+            style: "danger",
+            action: {
+              name: event.id.toString(),
+              data: {}
+            },
+            url: 'https://complete-rare-octopus.ngrok-free.app/v1/allEvents'
+          }
+      )
+    }
 
     // @ts-ignore
     blocksApi.Buttons("exampleButtonsBlock" + event.id , buttonsList);
@@ -62,6 +86,6 @@ export default async function myEvents(req: Request, res: Response) {
     blocksApi.Divider("divider" + event.id);
 
 
-    res.send(blocksApi.toJson());
   });
+    res.send(blocksApi.toJson());
 }
