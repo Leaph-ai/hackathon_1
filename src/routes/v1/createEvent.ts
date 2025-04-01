@@ -11,8 +11,9 @@ export default async function createEvent(req: Request, res: Response) {
     try {
         const blocksApi = new Edusign.Blocks();
 
-        const { title, date, description } = req.body;
-
+        const { title, date, hour,description } = req.body;
+        blocksApi.Title("createText", "Créer un événement")
+        blocksApi.Divider("divider")
         blocksApi.Form(
             "createForm",
             [
@@ -28,6 +29,13 @@ export default async function createEvent(req: Request, res: Response) {
                     name: "my-datepicker",
                     label: "Date de l'événement",
                     value: date || new Date().toISOString(),
+                },
+                {
+                    type: "input",
+                    name: "hour-input",
+                    label: "Heure de l'événement",
+                    placeholder: "17h00-19h00",
+                    value: hour || "",
                 },
                 {
                     type: "textarea",
