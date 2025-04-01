@@ -21,11 +21,13 @@ export default async function modifyEvents(req: Request, res: Response) {
         blocksApi.Form(
             "modifyForm",
             [
-                // {
-                //     type: "number",
-                //     name: req.body["action"],
-                //     hidden: true,
-                // },
+                {
+                    type: "input",
+                    label:"id",
+                    name:"id",
+                    value: req.body["action"],
+                    hidden: true,
+                },
                 {
                     type: "input",
                     name: "title-input",
@@ -63,6 +65,5 @@ export default async function modifyEvents(req: Request, res: Response) {
             console.error("Error creating event:", error);
             res.status(500).json({ error: "Internal server error" });
         }
-
 
     }

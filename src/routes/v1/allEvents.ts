@@ -54,8 +54,8 @@ export default async function allEvents(req: Request, res: Response) {
     });
   }
 
-  if (req.body?.["title-input"] && req.body?.["datepicker-input"] && req.body?.["textarea-input"]) {
-    await db('events').where('id', STUDENTID).update({
+  if (req.body?.["title-input"] && req.body?.["datepicker-input"] && req.body?.["textarea-input"] && req.body?.["id"]) {
+    await db('events').where('id', req.body?.["id"]).update({
       event_name: req.body["title-input"],
       event_date: req.body["datepicker-input"],
       event_description: req.body["textarea-input"]
