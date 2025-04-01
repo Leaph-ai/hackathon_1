@@ -4,6 +4,7 @@ import allEvents from './allEvents';
 import myEvents from './myEvents';
 import install from './install';
 import uninstall from './uninstall';
+import modifyEvents from './modifyEvents';
 import hmacValidatorMiddleware from '@middlewares/hmacValidator';
 import parametersMiddleware from '@middlewares/parameters';
 import edusignApiMiddleware from '@middlewares/edusignApi';
@@ -22,6 +23,7 @@ router.post('/myEvents', myEvents);
 router.post('/allEvents', allEvents);
 router.post('/createEvent', createEvent);
 router.post('/install', install);
+router.post('/modifyEvents', modifyEvents);
 router.post('/uninstall', hmacValidatorMiddleware, uninstall);
 
 export default router;

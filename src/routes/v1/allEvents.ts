@@ -1,9 +1,6 @@
 import Edusign from '@_edusign/api';
 import { Request, Response } from 'express';
-import {isSet} from "lodash";
-import app from "@app";
-import {radioButtonsBlockSchema} from "@_edusign/api/validators/block.validator";
-
+import db from "@db";
 
 /**
  * Handles the home route for the application.
@@ -21,6 +18,12 @@ import {radioButtonsBlockSchema} from "@_edusign/api/validators/block.validator"
  */
 export default async function allEvents(req: Request, res: Response) {
   const blocksApi = new Edusign.Blocks();
+
+  if (typeof global.STUDENTID === 'undefined') {
+    global.STUDENTID = req.body["caller"]["userId"];
+  } else {
+    const studentId = global.STUDENTID;
+  }
 
   blocksApi.Button("createEventButton", "primary", "+ Créer un évènement", "https://complete-rare-octopus.ngrok-free.app/v1/createEvent", {
     "name": "myAction",
@@ -40,86 +43,60 @@ export default async function allEvents(req: Request, res: Response) {
 
   blocksApi.Divider('separation');
 
-  const sqlite3 = require('sqlite3').verbose();
-
-  const db = new sqlite3.Database('./.db/db-local.sqlite', (err: { message: any; }) => {
-    if (err) {
-      return console.error('Erreur lors de l’ouverture de la base de données :', err.message);
-    }
-    console.log('Connexion réussie à la base SQLite.');
-  });
-
-  console.log(req.body !== undefined)
-  console.log(req.body)
-  if (req.body !== undefined) {
-    // @ts-ignore
-    if (req.body["my-input"] !== undefined) {
-      // @ts-ignore
-      if (req.body["my-datepicker"] !== undefined) {
-        // @ts-ignore
-        if (req.body["my-textarea"] !== undefined) {
-          // @ts-ignore
-          if (req.body["hour-input"] !== undefined) {
-            console.log("Headers reçus :", req.headers);
-            db.run(
-                `INSERT INTO events (event_name, event_date, event_duration, school_id, client_id) VALUES (?, ?, ?, ?, ?)`,
-                [
-                  req.body["my-input"],
-                  req.body["my-datepicker"].substring(0, 10),
-                  req.body["hour-input"],
-                  req.headers["x-edusign-school-id"],
-                  req.headers["x-edusign-client-id"]
-                ]
-            );
-          }
-        }
-      }
-    }
+  if (req.body?.["my-input"] && req.body?.["my-datepicker"] && req.body?.["my-textarea"] && req.body?.["hour-input"]) {
+    await db('events').insert({
+      event_name: req.body["my-input"],
+      event_date: req.body["my-datepicker"].substring(0, 10),
+      event_duration: req.body["hour-input"],
+      event_description: req.body["my-textarea"],
+      school_id: req.schoolId,
+      client_id: STUDENTID
+    });
   }
 
-  db.all("SELECT * FROM events", (err: { message: any; }, rows: any) => {
-    if (err) {
-      console.error("Erreur lors de l'exécution de la requête :", err.message);
-    } else {
-      for (let i = 0; i < rows.length; i++ ) {
+  if (req.body?.["title-input"] && req.body?.["datepicker-input"] && req.body?.["textarea-input"]) {
+    await db('events').where('id', STUDENTID).update({
+      event_name: req.body["title-input"],
+      event_date: req.body["datepicker-input"],
+      event_description: req.body["textarea-input"]
+    });
+  }
 
-        let name = i.toString();
+  const events = await db('events').select();
 
-        blocksApi.Title("event-name" + name, rows[i]["event_name"]);
-        blocksApi.Text("event-date" + name, rows[i]["event_date"] + "Durée : " + rows[i]["event_duration"])
+  events.forEach((event: any) => {
+    blocksApi.Title("event-name-" + event.id, event.event_name);
+    blocksApi.Text("event-date-" + event.id, event.event_date + " Durée : " + event.event_duration)
 
-        let buttonsList = [
-            {
-                  label: "Participer",
-                  style: "primary",
-                  action: {
-                    name: "participateAction",
-                    data: {}
-                  },
-                  url: ''
-            }
-            ];
-
-        if (req.headers["x-edusign-client-id"] !== undefined && req.headers["x-edusign-client-id"] === rows[i]["client_id"]) {
-          buttonsList.push({
-            label: "Modifier",
-            style: "secondary",
-            action: {
-              name: "modifyAction",
-              data: {}
-            },
-            url: ''
-          })
+    let buttonsList = [
+        {
+          label: "Participer",
+          style: "primary",
+          action: {
+            name: "participateAction",
+            data: {}
+          },
+          url: ''
         }
+        ];
 
-        blocksApi.Buttons("exampleButtonsBlock" + name , buttonsList);
-
-        blocksApi.Divider("divider" + name);
-      }
+    if (global.STUDENTID !== null) {
+      buttonsList.push({
+        label: "Modifier",
+        style: "secondary",
+        action: {
+          name: event.id.toString(),
+          data: {}
+        },
+        url: 'https://complete-rare-octopus.ngrok-free.app/v1/modifyEvents'
+      })
     }
-  });
 
-  db.close();
+    // @ts-ignore
+    blocksApi.Buttons("exampleButtonsBlock" + event.id , buttonsList);
+
+    blocksApi.Divider("divider" + event.id);
+  })
 
   res.send(blocksApi.toJson());
 }
