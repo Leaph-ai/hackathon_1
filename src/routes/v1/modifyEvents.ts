@@ -17,6 +17,7 @@ export default async function modifyEvents(req: Request, res: Response) {
         const dbTitle = events[0]["event_name"];
         const dbDate = events[0]["event_date"];
         const dbDescription = events[0]["event_description"];
+        const dbHour = events[0]["event_duration"]
 
         blocksApi.Form(
             "modifyForm",
@@ -33,13 +34,20 @@ export default async function modifyEvents(req: Request, res: Response) {
                     name: "title-input",
                     label: "Titre de l'événement",
                     placeholder: "Titre",
-                    value: dbTitle,
+                    value: dbTitle || "",
+                },
+                {
+                    type: "input",
+                    name: "hour-input",
+                    label: "Heure de l'événement",
+                    placeholder: "17h00-19h00",
+                    value: dbHour || "",
                 },
                 {
                     type: "datepicker",
                     name: "datepicker-input",
                     label: "Date de l'événement",
-                    value: dbDate,
+                    value: dbDate || "",
                 },
                 {
                     type: "textarea",
@@ -51,7 +59,7 @@ export default async function modifyEvents(req: Request, res: Response) {
 
             {
                 name: "submit",
-                label: "Submit",
+                label: "Modifier",
                 style: "secondary",
             },
             "https://complete-rare-octopus.ngrok-free.app/v1/allEvents"

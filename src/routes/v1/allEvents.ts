@@ -1,6 +1,7 @@
 import Edusign from '@_edusign/api';
 import { Request, Response } from 'express';
 import db from "@db";
+import {getParticipationTab, getParticipationString} from "@routes/v1/getParticipation";
 
 /**
  * Handles the home route for the application.
@@ -50,35 +51,53 @@ export default async function allEvents(req: Request, res: Response) {
       event_duration: req.body["hour-input"],
       event_description: req.body["my-textarea"],
       school_id: req.schoolId,
-      client_id: STUDENTID
+      student_id: STUDENTID
     });
   }
 
-  if (req.body?.["title-input"] && req.body?.["datepicker-input"] && req.body?.["textarea-input"] && req.body?.["id"]) {
+  if (req.body?.["title-input"] && req.body?.["datepicker-input"] && req.body?.["textarea-input"] && req.body?.["id"] && req.body?.["hour-input"]) {
     await db('events').where('id', req.body?.["id"]).update({
       event_name: req.body["title-input"],
       event_date: req.body["datepicker-input"],
-      event_description: req.body["textarea-input"]
+      event_description: req.body["textarea-input"],
+      event_duration : req.body["hour-input"]
     });
   }
 
   const events = await db('events').select();
 
+
   events.forEach((event: any) => {
     blocksApi.Title("event-name-" + event.id, event.event_name);
-    blocksApi.Text("event-date-" + event.id, event.event_date + " Durée : " + event.event_duration)
+    blocksApi.Text("event-description-" + event.id, event.event_description || "/");
+    blocksApi.Text("event-date-" + event.id, event.event_date + ", Durée : " + event.event_duration);
+
+    let participationStatus: string = event.participation ? event.participation.split(',').toString() : "";
 
     let buttonsList = [
         {
           label: "Participer",
           style: "primary",
           action: {
-            name: "participateAction",
+            name: participationStatus || "empty",
             data: {}
           },
-          url: ''
+          url: 'https://complete-rare-octopus.ngrok-free.app/v1/allEvents'
         }
         ];
+
+    if (req.body?.["action"]) {
+      if (req.body?.["action"] === "empty") {
+        let participation = ""
+
+        for (let i = 0; i < req.body?.["action"].length; i++) {
+          participation.concat(req.body?.["action"][i])
+          if (i !== req.body?.["action"].length - 1) {
+            participation.concat(",");
+          }
+        }
+      }
+    }
 
     if (global.STUDENTID !== null) {
       buttonsList.push({

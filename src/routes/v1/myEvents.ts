@@ -1,6 +1,6 @@
 import Edusign from '@_edusign/api';
 import { Request, Response } from 'express';
-
+import db from "@db";
 
 /**
  * Handles the home route for the application.
@@ -19,7 +19,14 @@ import { Request, Response } from 'express';
 export default async function myEvents(req: Request, res: Response) {
   const blocksApi = new Edusign.Blocks();
 
-  blocksApi.Card("newCard", "Nouvelle carte");
+  blocksApi.Button("createEventButton", "primary", "+ Créer un évènement", "https://complete-rare-octopus.ngrok-free.app/v1/createEvent", {
+    "name": "myAction",
+    "data": {
+      "key1": "value1",
+      "key2": "value2"
+    }
+  });
+
   blocksApi.Wrapper("wrapperId", [
     { label: "Tout les événements", value: "allevents" },
     { label: "Mes événements", value: "myevents" }
@@ -28,5 +35,33 @@ export default async function myEvents(req: Request, res: Response) {
     data: {}
   });
 
-  res.send(blocksApi.toJson());
+  blocksApi.Divider('separation');
+
+
+  const events = await db('events').select().where('student_id', STUDENTID);
+
+  let buttonsList = [];
+
+  events.forEach(event => {
+    blocksApi.Title("event-name-" + event.id, event.event_name);
+    blocksApi.Text("event-date-" + event.id, event.event_date + " Durée : " + event.event_duration)
+
+    buttonsList.push({
+      label: "Modifier",
+      style: "secondary",
+      action: {
+        name: event.id.toString(),
+        data: {}
+      },
+      url: 'https://complete-rare-octopus.ngrok-free.app/v1/modifyEvents'
+    })
+
+    // @ts-ignore
+    blocksApi.Buttons("exampleButtonsBlock" + event.id , buttonsList);
+
+    blocksApi.Divider("divider" + event.id);
+
+
+    res.send(blocksApi.toJson());
+  });
 }

@@ -8,7 +8,7 @@ import { Knex } from 'knex';
  */
 export async function getParticipationTab(title: Knex.DbColumn<any> | null) {
     try {
-        let participation = await db.select("participation").where("title", title)[Symbol.toStringTag];
+        let participation = await db.select("participation").where("event_name", title)[Symbol.toStringTag];
         return participation.split(',');
     } catch (error) {
         console.error("Error getting participation:", error);
@@ -29,4 +29,3 @@ export async function getParticipationString(participationTab: string | any[]) {
         console.error("Error getting participation:", error);
     }
 }
-

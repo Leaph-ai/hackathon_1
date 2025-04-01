@@ -46,7 +46,7 @@ export default async function createEvent(req: Request, res: Response) {
             ],
             {
                 name: "submit",
-                label: "Submit",
+                label: "Envoyer",
                 style: "secondary",
             },
             "https://complete-rare-octopus.ngrok-free.app/v1/allEvents"
